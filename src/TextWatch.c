@@ -26,6 +26,8 @@ static char line1Str[2][BUFFER_SIZE];
 static char line2Str[2][BUFFER_SIZE];
 static char line3Str[2][BUFFER_SIZE];
 
+static int pauseAnimation;
+
 // Animation handler
 static void animationStoppedHandler(struct Animation *animation, bool finished, void *context)
 {
@@ -38,6 +40,7 @@ static void animationStoppedHandler(struct Animation *animation, bool finished, 
 // Animate line
 static void makeAnimationsForLayers(Line *line, TextLayer *current, TextLayer *next)
 {
+	if (pauseAnimation){return;}
 	GRect fromRect = layer_get_frame(text_layer_get_layer(next));
 	GRect toRect = fromRect;
 	toRect.origin.x -= 144;
@@ -188,7 +191,17 @@ static void handle_minute_tick(struct tm *tick_time, TimeUnits units_changed) {
   display_time(tick_time);
 }
 
+void focus_handler(bool in_focus) {
+  if (in_focus) {
+    pauseAnimation = 0;
+    display_time(t);
+  } else {
+    pauseAnimation = 1;
+  }
+}
+
 static void init() {
+  pauseAnimation = 0;
   window = window_create();
   window_stack_push(window, true);
   window_set_background_color(window, GColorBlack);
@@ -235,6 +248,7 @@ static void init() {
 	#endif
 
   tick_timer_service_subscribe(MINUTE_UNIT, handle_minute_tick);
+  app_focus_service_subscribe(focus_handler);
 }
 
 static void deinit() {
