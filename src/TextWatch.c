@@ -29,10 +29,9 @@ static char line3Str[2][BUFFER_SIZE];
 // Animation handler
 static void animationStoppedHandler(struct Animation *animation, bool finished, void *context)
 {
-	Layer *textLayer = text_layer_get_layer((TextLayer *)context);
-	GRect rect = layer_get_frame(textLayer);
-	rect.origin.x = 144;
-	layer_set_frame(textLayer, rect);
+	//unless we destroy the animation the memory leak from continued property_animatin_create_layer_frame will kill us
+	Line *line = (Line*)context);
+	property_animation_destroy(line->currentAnimation);
 }
 
 // Animate line
@@ -40,7 +39,9 @@ static void makeAnimationsForLayers(Line *line, TextLayer *current, TextLayer *n
 {
 	GRect fromRect = layer_get_frame(text_layer_get_layer(next));
 	GRect toRect = fromRect;
-	toRect.origin.x -= 144;
+	//move the animation math here instead of the Animation handler
+	toRect.origin.x = 0;
+	fromRect.origin.x= 144;
 	
 	line->nextAnimation = property_animation_create_layer_frame(text_layer_get_layer(next), &fromRect, &toRect);
 	animation_set_duration((Animation *)line->nextAnimation, 400);
@@ -49,7 +50,9 @@ static void makeAnimationsForLayers(Line *line, TextLayer *current, TextLayer *n
 	
 	GRect fromRect2 = layer_get_frame(text_layer_get_layer(current));
 	GRect toRect2 = fromRect2;
-	toRect2.origin.x -= 144;
+	//move the animation math here instead of the Animation handler
+	toRect2.origin.x = 0;
+	fronRect2.origin.x = 144
 	
 	line->currentAnimation = property_animation_create_layer_frame(text_layer_get_layer(current), &fromRect2, &toRect2);
 	animation_set_duration((Animation *)line->currentAnimation, 400);
