@@ -30,7 +30,7 @@ static char line3Str[2][BUFFER_SIZE];
 static void animationStoppedHandler(struct Animation *animation, bool finished, void *context)
 {
 	//unless we destroy the animation the memory leak from continued property_animatin_create_layer_frame will kill us
-	Line *line = (Line*)context);
+	Line *line = ((Line*)context);
 	property_animation_destroy(line->currentAnimation);
 }
 
@@ -52,7 +52,7 @@ static void makeAnimationsForLayers(Line *line, TextLayer *current, TextLayer *n
 	GRect toRect2 = fromRect2;
 	//move the animation math here instead of the Animation handler
 	toRect2.origin.x = 0;
-	fronRect2.origin.x = 144
+	fromRect2.origin.x = 144;
 	
 	line->currentAnimation = property_animation_create_layer_frame(text_layer_get_layer(current), &fromRect2, &toRect2);
 	animation_set_duration((Animation *)line->currentAnimation, 400);
